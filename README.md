@@ -67,11 +67,17 @@ AI_PROVIDER=openai
 
 ### 3. Set up the database
 
-Apply the schema migration to your database:
+The schema is not fully created by the app yet. The migration in `db/proposed/0001_align_schema_with_app.sql` adds the `invoices`, `invoice_items` and `pnl_entries` tables and the `projects` columns the app needs. It is additive and idempotent (no drops, safe to re-run).
+
+Before running it, check which database `DATABASE_URL` points to, and take a backup if the database holds real data:
 
 ```bash
+set -a; source .env.local; set +a
+psql "$DATABASE_URL" -P pager=off -c '\dt'
 psql "$DATABASE_URL" -f db/proposed/0001_align_schema_with_app.sql
 ```
+
+Without this migration, project pages fail with `relation "invoices" does not exist`.
 
 ### 4. Run the app
 
